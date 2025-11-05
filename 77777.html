@@ -1,0 +1,2938 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialFlow | Video Platformu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary: #ff2d55;
+            --secondary: #5856d6;
+            --bg-dark: #000000;
+            --bg-card: #1c1c1e;
+            --text-light: #ffffff;
+            --text-gray: #8e8e93;
+            --border: #2c2c2e;
+            --success: #4cd964;
+            --warning: #ffcc00;
+            --danger: #ff3b30;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* GÜVENLİK UYARI MESAJI */
+        .security-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, var(--danger), #ff6b6b);
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 5000;
+            display: none;
+        }
+
+        /* GİRİŞ EKRANI */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .welcome-logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 30px;
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 40px;
+            max-width: 300px;
+            line-height: 1.5;
+        }
+
+        .gender-selection-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid var(--border);
+        }
+
+        .gender-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .gender-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .gender-option {
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 15px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gender-option.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .gender-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .gender-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .enter-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 45, 85, 0.4);
+        }
+
+        .age-warning {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.4;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 45, 85, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 45, 85, 0.3);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-dark);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            display: none;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Admin Panel Button */
+        .admin-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(88, 86, 214, 0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 60px;
+            height: calc(100vh - 140px);
+            display: none;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            height: 100%;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* FULL SCREEN VIDEO FEED - TikTok/Reels Style */
+        .video-feed {
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .video-feed::-webkit-scrollbar {
+            display: none;
+        }
+
+        .video-feed {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .video-container {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            z-index: 2;
+        }
+
+        .video-info {
+            margin-bottom: 80px;
+        }
+
+        .video-creator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .creator-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .creator-info {
+            flex: 1;
+        }
+
+        .creator-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .creator-followers {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .video-caption {
+            font-size: 15px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .video-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .video-tag {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        /* Video Actions */
+        .video-actions {
+            position: absolute;
+            right: 20px;
+            bottom: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover .action-icon {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        .action-count {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Video Loading Spinner */
+        .video-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* EXPLORE PAGE */
+        .explore-content {
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .categories-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .categories-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .category-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .category-count {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: 5px;
+        }
+
+        /* Videos Grid in Explore */
+        .videos-section {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .videos-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .videos-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .video-item {
+            position: relative;
+            aspect-ratio: 9/16;
+            background: var(--bg-card);
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+        }
+
+        .video-item-creator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+
+        .video-item-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .video-item-name {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .video-item-stats {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 10px;
+            color: var(--text-gray);
+        }
+
+        .video-item-stat {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .video-item-duration {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        /* 18+ Uyarı Modalı */
+        .age-warning-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 4000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .age-warning-modal.active {
+            display: flex;
+        }
+
+        .age-warning-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid var(--primary);
+        }
+
+        .warning-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .warning-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .warning-text {
+            color: var(--text-gray);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .warning-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .warning-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 45, 85, 0.4);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-dark);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 10px;
+            transition: color 0.2s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        /* Video Player Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 2000;
+        }
+
+        .video-modal.active {
+            display: block;
+        }
+
+        .modal-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 3000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+            display: none;
+        }
+
+        .scroll-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .scroll-dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+        }
+
+        /* Fullscreen Styles */
+        .video-container:-webkit-full-screen {
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-container:-moz-full-screen {
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-container:-ms-fullscreen {
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-container:fullscreen {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* GÜVENLİK GİRİŞ MODALI */
+        .security-login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 6000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .security-login-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 30px rgba(255, 45, 85, 0.3);
+        }
+
+        .security-login-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .security-input-group {
+            margin-bottom: 20px;
+        }
+
+        .security-input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .security-input {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            color: var(--text-light);
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+        .security-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .captcha-container {
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .captcha-text {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            user-select: none;
+        }
+
+        .captcha-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-light);
+            text-align: center;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+
+        .security-login-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .security-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 45, 85, 0.4);
+        }
+
+        .security-login-btn:disabled {
+            background: var(--text-gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .login-attempts {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-top: 15px;
+        }
+
+        .security-warning {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--danger);
+            line-height: 1.4;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 59, 48, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+        }
+
+        .security-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--success);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .security-status.warning {
+            background: var(--warning);
+        }
+
+        .security-status.danger {
+            background: var(--danger);
+        }
+
+        .security-icon {
+            font-size: 20px;
+        }
+
+        /* Gizli Admin Paneli Linki */
+        .hidden-admin-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 5px;
+            height: 5px;
+            background: transparent;
+            z-index: 10000;
+            cursor: pointer;
+        }
+
+        /* İnsan Doğrulama Sistemi */
+        .human-verification {
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .human-verification.active {
+            border-color: var(--success);
+            background: rgba(76, 217, 100, 0.05);
+        }
+
+        .verification-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .verification-subtitle {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 20px;
+        }
+
+        .verification-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .verification-option {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .verification-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .verification-option.selected {
+            border-color: var(--success);
+            background: rgba(76, 217, 100, 0.1);
+        }
+
+        .verification-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .verification-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .puzzle-container {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .puzzle-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .puzzle-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .puzzle-image {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .puzzle-image.selected {
+            border-color: var(--success);
+            transform: scale(1.05);
+        }
+
+        .puzzle-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .puzzle-question {
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .verification-slider {
+            background: var(--bg-card);
+            border-radius: 25px;
+            height: 50px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .slider-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            transform: translateX(-100%);
+            transition: transform 0.1s ease;
+        }
+
+        .slider-thumb {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 2;
+            transition: left 0.1s ease;
+        }
+
+        .slider-thumb i {
+            color: var(--primary);
+        }
+
+        .slider-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .verification-success {
+            background: var(--success);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .verification-success i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .timer-display {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        .timer-display.warning {
+            color: var(--warning);
+        }
+
+        .timer-display.danger {
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <!-- GÜVENLİK UYARI MESAJI -->
+    <div class="security-alert" id="securityAlert">
+        <i class="fas fa-shield-alt"></i> SocialFlow Güvenlik Sistemi Aktif - Tüm verileriniz koruma altında
+    </div>
+
+    <!-- GİRİŞ EKRANI -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-logo">
+            <i class="fas fa-play-circle"></i> SocialFlow
+        </div>
+        
+        <h1 class="welcome-title">SocialFlow'a Hoş Geldin</h1>
+        <p class="welcome-subtitle">Kişiselleştirilmiş içerik deneyimi için cinsiyetini seç</p>
+        
+        <div class="gender-selection-container">
+            <h2 class="gender-title">Seni nasıl tanıyalım?</h2>
+            
+            <div class="gender-grid">
+                <div class="gender-option active" data-gender="male">
+                    <div class="gender-icon">♂</div>
+                    <div class="gender-name">Erkek</div>
+                </div>
+                <div class="gender-option" data-gender="female">
+                    <div class="gender-icon">♀</div>
+                    <div class="gender-name">Kadın</div>
+                </div>
+                <div class="gender-option" data-gender="lesbian">
+                    <div class="gender-icon">♀♀</div>
+                    <div class="gender-name">Lezbiyen</div>
+                </div>
+                <div class="gender-option" data-gender="gay">
+                    <div class="gender-icon">♂♂</div>
+                    <div class="gender-name">Gay</div>
+                </div>
+                <div class="gender-option" data-gender="trans">
+                    <div class="gender-icon">⚧</div>
+                    <div class="gender-name">Trans</div>
+                </div>
+                <div class="gender-option" data-gender="other">
+                    <div class="gender-icon">?</div>
+                    <div class="gender-name">Diğer</div>
+                </div>
+            </div>
+            
+            <button class="enter-btn" onclick="enterApp()">
+                <i class="fas fa-arrow-right"></i> SocialFlow'a Gir
+            </button>
+            
+            <div class="age-warning">
+                <strong>18+ İçerik Uyarısı:</strong> Bu platform yetişkin içerikleri barındırmaktadır. 18 yaşından küçükler için uygun değildir.
+            </div>
+        </div>
+    </div>
+
+    <!-- 18+ Uyarı Modalı -->
+    <div class="age-warning-modal" id="ageWarningModal">
+        <div class="age-warning-content">
+            <div class="warning-icon">⚠️</div>
+            <h2 class="warning-title">18+ İçerik Uyarısı</h2>
+            <p class="warning-text">
+                Bu platform yetişkinlere yönelik içerikler barındırmaktadır. 18 yaşından küçükseniz lütfen bu platformu kullanmayınız.
+            </p>
+            <button class="warning-btn" onclick="closeAgeWarning()">Anladım, Devam Et</button>
+        </div>
+    </div>
+
+    <!-- Gizli Admin Giriş Linki -->
+    <div class="hidden-admin-link" id="hiddenAdminLink"></div>
+
+    <!-- GÜVENLİK GİRİŞ MODALI -->
+    <div class="security-login-modal" id="securityLoginModal">
+        <div class="security-login-container">
+            <h2 class="security-login-title">
+                <i class="fas fa-shield-alt"></i> GÜVENLİK GİRİŞİ
+            </h2>
+            
+            <div class="security-status" id="securityLoginStatus">
+                <i class="fas fa-shield-alt security-icon"></i>
+                <div>
+                    <div class="stat-value">Güvenlik Sistemi Aktif</div>
+                    <div class="stat-label">Tüm giriş denemeleri kayıt altında</div>
+                </div>
+            </div>
+            
+            <!-- İnsan Doğrulama Sistemi -->
+            <div class="human-verification" id="humanVerification">
+                <div class="verification-title">Güvenlik Doğrulaması</div>
+                <div class="verification-subtitle">Lütfen aşağıdaki doğrulamayı tamamlayın</div>
+                
+                <div class="timer-display" id="verificationTimer">Kalan süre: <span id="timerValue">60</span> saniye</div>
+                
+                <!-- Seçim Doğrulaması -->
+                <div class="verification-options" id="verificationOptions">
+                    <div class="verification-option" data-correct="true">
+                        <div class="verification-icon">👨‍💻</div>
+                        <div class="verification-text">İnsan</div>
+                    </div>
+                    <div class="verification-option" data-correct="false">
+                        <div class="verification-icon">🤖</div>
+                        <div class="verification-text">Robot</div>
+                    </div>
+                    <div class="verification-option" data-correct="false">
+                        <div class="verification-icon">🦾</div>
+                        <div class="verification-text">Yapay Zeka</div>
+                    </div>
+                    <div class="verification-option" data-correct="true">
+                        <div class="verification-icon">👩‍🎓</div>
+                        <div class="verification-text">İnsan</div>
+                    </div>
+                </div>
+                
+                <!-- Görsel Doğrulama -->
+                <div class="puzzle-container" id="puzzleContainer">
+                    <div class="puzzle-title">Güvenlik Bulmacası</div>
+                    <div class="puzzle-question" id="puzzleQuestion">"Trafik ışıkları" resmini seçin</div>
+                    <div class="puzzle-images" id="puzzleImages">
+                        <!-- Resimler JavaScript ile eklenecek -->
+                    </div>
+                </div>
+                
+                <!-- Sürgü Doğrulama -->
+                <div class="verification-slider" id="verificationSlider">
+                    <div class="slider-track" id="sliderTrack"></div>
+                    <div class="slider-thumb" id="sliderThumb">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="slider-text">Sürgüyü sağa kaydırın</div>
+                </div>
+                
+                <div class="verification-success" id="verificationSuccess">
+                    <i class="fas fa-check-circle"></i>
+                    <div>Doğrulama Başarılı!</div>
+                </div>
+            </div>
+            
+            <div class="security-input-group">
+                <label class="security-input-label">12 Haneli Kullanıcı Adı</label>
+                <input type="text" class="security-input" id="securityUsername" 
+                       maxlength="12" placeholder="Kullanıcı adınızı girin" 
+                       onkeypress="return validateSecurityInput(event)">
+            </div>
+            
+            <div class="security-input-group">
+                <label class="security-input-label">26 Haneli Güvenlik Şifresi</label>
+                <input type="password" class="security-input" id="securityPassword" 
+                       maxlength="26" placeholder="Şifrenizi girin"
+                       onkeypress="return validateSecurityInput(event)"
+                       onkeydown="handleEnterKey(event)">
+            </div>
+            
+            <div class="captcha-container">
+                <div class="captcha-text" id="captchaText">ABCD1234</div>
+                <input type="text" class="captcha-input" id="captchaInput" 
+                       maxlength="8" placeholder="Yukarıdaki kodu girin"
+                       onkeypress="return validateSecurityInput(event)"
+                       onkeydown="handleEnterKey(event)">
+            </div>
+            
+            <button class="security-login-btn" id="securityLoginBtn" onclick="attemptSecurityLogin()" disabled>
+                <i class="fas fa-fingerprint"></i> GÜVENLİK GİRİŞİ YAP
+            </button>
+            
+            <div class="login-attempts" id="loginAttempts">
+                Kalan deneme hakkı: <span id="remainingAttempts">3</span>
+            </div>
+            
+            <div class="security-warning">
+                <strong>GÜVENLİK UYARISI:</strong> Yetkisiz giriş denemeleri otomatik olarak engellenecek ve kayıt altına alınacaktır. 3 başarısız denemede sistem 30 dakika kilitlenecektir.
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header" id="mainHeader">
+        <div class="logo">SocialFlow</div>
+        <div class="header-actions">
+            <button class="admin-btn" onclick="openSecurityLogin()" title="Güvenlik Paneli">
+                <i class="fas fa-shield-alt"></i>
+            </button>
+            <button class="header-btn">
+                <i class="fas fa-bell"></i>
+            </button>
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Home Page - Full Screen Video Feed -->
+        <div class="page active" id="homePage">
+            <div class="video-feed" id="videoFeed">
+                <!-- Videolar buraya yüklenecek -->
+            </div>
+            <div class="scroll-indicator" id="scrollIndicator">
+                <!-- Scroll göstergesi noktaları buraya eklenecek -->
+            </div>
+        </div>
+
+        <!-- Explore Page - Categories and Videos -->
+        <div class="page" id="explorePage">
+            <div class="explore-content">
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Kategoriler buraya yüklenecek -->
+                </div>
+                
+                <div class="videos-section">
+                    <h2 class="section-title">Popüler Videolar</h2>
+                    <div class="videos-grid" id="exploreVideosGrid">
+                        <!-- Keşfet videoları buraya yüklenecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div class="video-modal" id="videoModal">
+        <button class="modal-close" onclick="closeVideoModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <video class="modal-video" controls id="modalVideo">
+            <source src="" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" data-page="home" onclick="switchPage('home')">
+            <i class="fas fa-home nav-icon"></i>
+            <span>Ana Sayfa</span>
+        </button>
+        <button class="nav-item" data-page="explore" onclick="switchPage('explore')">
+            <i class="fas fa-compass nav-icon"></i>
+            <span>Keşfet</span>
+        </button>
+        <button class="nav-item">
+            <i class="fas fa-plus-circle nav-icon"></i>
+            <span>Oluştur</span>
+        </button>
+        <button class="nav-item">
+            <i class="fas fa-heart nav-icon"></i>
+            <span>Beğeni</span>
+        </button>
+        <button class="nav-item">
+            <i class="fas fa-user nav-icon"></i>
+            <span>Profil</span>
+        </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Video verileri
+        const videoData = {
+            all: [
+                {
+                    id: 1,
+                    creator: { name: "GüzellikKızı", avatar: "GK", followers: "256K" },
+                    thumbnail: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=600&fit=crop",
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-girl-looking-at-the-camera-4472-large.mp4",
+                    duration: "0:15",
+                    views: "125K",
+                    likes: "12.5K",
+                    caption: "Yaz makyajım 🥰 #makyaj #güzellik #trend",
+                    category: "beauty"
+                },
+                {
+                    id: 2,
+                    creator: { name: "DansYıldızı", avatar: "DY", followers: "189K" },
+                    thumbnail: "https://images.unsplash.com/photo-1531747056595-07f6cbbe10ad?w=400&h=600&fit=crop",
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sunglasses-dancing-34534-large.mp4",
+                    duration: "0:22",
+                    views: "89K",
+                    likes: "8.9K",
+                    caption: "Yeni dans hareketleri 💃 #dans #koreografi #eğlence",
+                    category: "dance"
+                },
+                {
+                    id: 3,
+                    creator: { name: "KomediUstası", avatar: "KU", followers: "412K" },
+                    thumbnail: "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=400&h=600&fit=crop",
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-two-people-in-a-comedy-show-4475-large.mp4",
+                    duration: "0:18",
+                    views: "256K",
+                    likes: "25.6K",
+                    caption: "Güldürmeyen komedi ödemesi yok 😂 #komedi #gülmek #eğlence",
+                    category: "comedy"
+                },
+                {
+                    id: 4,
+                    creator: { name: "MüzikDünyası", avatar: "MD", followers: "512K" },
+                    thumbnail: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=600&fit=crop",
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-guitarist-performing-on-stage-4474-large.mp4",
+                    duration: "0:30",
+                    views: "356K",
+                    likes: "35.6K",
+                    caption: "Akustik performans 🎸 #müzik #gitar #akustik",
+                    category: "music"
+                },
+                {
+                    id: 5,
+                    creator: { name: "SporAdam", avatar: "SA", followers: "289K" },
+                    thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=600&fit=crop",
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-young-man-doing-push-ups-4473-large.mp4",
+                    duration: "0:25",
+                    views: "198K",
+                    likes: "19.8K",
+                    caption: "Günlük antrenman rutinim 💪 #spor #fitness #sağlık",
+                    category: "sports"
+                },
+                {
+                    id: 6,
+                    creator: { name: "OyunSever", avatar: "OS", followers: "621K" },
+                    thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=600&fit=crop",
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-person-playing-a-video-game-4471-large.mp4",
+                    duration: "0:20",
+                    views: "412K",
+                    likes: "41.2K",
+                    caption: "Yeni oyundan gameplay 🎮 #oyun #gaming #gameplay",
+                    category: "gaming"
+                }
+            ]
+        };
+
+        // Kategori verileri
+        const categories = [
+            { id: "trending", name: "Popüler", icon: "fas fa-fire", count: "1.2M", color: "#ff2d55" },
+            { id: "comedy", name: "Komedi", icon: "fas fa-laugh", count: "856K", color: "#ff9500" },
+            { id: "music", name: "Müzik", icon: "fas fa-music", count: "2.1M", color: "#5856d6" },
+            { id: "dance", name: "Dans", icon: "fas fa-child", count: "945K", color: "#ff3b30" },
+            { id: "beauty", name: "Güzellik", icon: "fas fa-palette", count: "1.5M", color: "#ff2d55" },
+            { id: "sports", name: "Spor", icon: "fas fa-running", count: "623K", color: "#4cd964" },
+            { id: "gaming", name: "Oyun", icon: "fas fa-gamepad", count: "3.2M", color: "#007aff" },
+            { id: "food", name: "Yemek", icon: "fas fa-utensils", count: "789K", color: "#ffcc00" },
+            { id: "animals", name: "Hayvanlar", icon: "fas fa-paw", count: "1.8M", color: "#8e8e93" },
+            { id: "travel", name: "Seyahat", icon: "fas fa-plane", count: "567K", color: "#5ac8fa" },
+            { id: "education", name: "Eğitim", icon: "fas fa-graduation-cap", count: "432K", color: "#5856d6" },
+            { id: "tech", name: "Teknoloji", icon: "fas fa-laptop", count: "345K", color: "#007aff" }
+        ];
+
+        // Gelişmiş Güvenlik Sistemi
+        const AdvancedSecuritySystem = {
+            // Güvenlik bilgileri
+            adminCredentials: {
+                username: "SFADMIN2024XY", // 12 haneli
+                password: "Sf!2024XyZqW@AbCdEfGhIjKlMnOp" // 26 haneli
+            },
+            
+            // Güvenlik durumu
+            securityStatus: {
+                failedAttempts: 0,
+                maxAttempts: 3,
+                isBlocked: false,
+                blockUntil: null,
+                lastAttempt: null,
+                ipAddress: null
+            },
+            
+            // CAPTCHA sistemi
+            captcha: {
+                currentText: "",
+                length: 8,
+                characters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            },
+            
+            // Saldırı tespit sistemi
+            threatDetection: {
+                suspiciousPatterns: [
+                    /(admin|root|password)/gi,
+                    /(select|union|drop|insert|delete)/gi,
+                    /(<script|javascript:|onload=)/gi,
+                    /(\.\.\/|\.\.\\|\.exe|\.sh)/gi
+                ],
+                blockedIPs: [],
+                suspiciousActivities: []
+            },
+            
+            // Sistem başlatma
+            init() {
+                this.generateCaptcha();
+                this.loadSecurityStatus();
+                this.setupSecurityMonitoring();
+                this.detectSuspiciousActivity();
+                this.logSecurityEvent("Güvenlik sistemi başlatıldı", "INFO");
+            },
+            
+            // CAPTCHA oluştur
+            generateCaptcha() {
+                let result = "";
+                for (let i = 0; i < this.captcha.length; i++) {
+                    result += this.captcha.characters.charAt(
+                        Math.floor(Math.random() * this.captcha.characters.length)
+                    );
+                }
+                this.captcha.currentText = result;
+                if (document.getElementById('captchaText')) {
+                    document.getElementById('captchaText').textContent = result;
+                }
+            },
+            
+            // Güvenlik durumunu yükle
+            loadSecurityStatus() {
+                const savedStatus = localStorage.getItem('securityStatus');
+                if (savedStatus) {
+                    const status = JSON.parse(savedStatus);
+                    
+                    // Eğer blok süresi dolmuşsa sıfırla
+                    if (status.blockUntil && new Date() > new Date(status.blockUntil)) {
+                        this.resetSecurityStatus();
+                    } else if (status.isBlocked) {
+                        this.securityStatus = status;
+                        this.updateSecurityUI("Sistem geçici olarak kilitli", "danger");
+                        this.disableLogin();
+                    } else {
+                        this.securityStatus = status;
+                    }
+                }
+                
+                this.updateRemainingAttempts();
+            },
+            
+            // Güvenlik durumunu kaydet
+            saveSecurityStatus() {
+                localStorage.setItem('securityStatus', JSON.stringify(this.securityStatus));
+            },
+            
+            // Güvenlik durumunu sıfırla
+            resetSecurityStatus() {
+                this.securityStatus = {
+                    failedAttempts: 0,
+                    maxAttempts: 3,
+                    isBlocked: false,
+                    blockUntil: null,
+                    lastAttempt: null,
+                    ipAddress: null
+                };
+                this.saveSecurityStatus();
+                this.updateSecurityUI("Güvenlik sistemi aktif", "success");
+                this.enableLogin();
+            },
+            
+            // Güvenlik UI güncelle
+            updateSecurityUI(message, status) {
+                const statusElement = document.getElementById('securityLoginStatus');
+                if (statusElement) {
+                    statusElement.innerHTML = `
+                        <i class="fas fa-shield-alt security-icon"></i>
+                        <div>
+                            <div class="stat-value">${message}</div>
+                            <div class="stat-label">${status === "danger" ? "Sistem kilitli" : "Tüm sistemler aktif"}</div>
+                        </div>
+                    `;
+                    
+                    statusElement.className = `security-status ${status === "danger" ? "danger" : 
+                                             status === "warning" ? "warning" : "success"}`;
+                }
+            },
+            
+            // Girişi devre dışı bırak
+            disableLogin() {
+                const loginBtn = document.getElementById('securityLoginBtn');
+                if (loginBtn) {
+                    loginBtn.disabled = true;
+                    loginBtn.innerHTML = '<i class="fas fa-lock"></i> SİSTEM KİLİTLİ';
+                }
+            },
+            
+            // Girişi etkinleştir
+            enableLogin() {
+                const loginBtn = document.getElementById('securityLoginBtn');
+                if (loginBtn) {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-fingerprint"></i> GÜVENLİK GİRİŞİ YAP';
+                }
+            },
+            
+            // Kalan deneme hakkını güncelle
+            updateRemainingAttempts() {
+                const remaining = this.securityStatus.maxAttempts - this.securityStatus.failedAttempts;
+                const remainingElement = document.getElementById('remainingAttempts');
+                const attemptsElement = document.getElementById('loginAttempts');
+                
+                if (remainingElement) {
+                    remainingElement.textContent = remaining;
+                }
+                
+                if (attemptsElement) {
+                    if (remaining <= 1) {
+                        attemptsElement.style.color = "var(--danger)";
+                    } else if (remaining <= 2) {
+                        attemptsElement.style.color = "var(--warning)";
+                    } else {
+                        attemptsElement.style.color = "var(--text-gray)";
+                    }
+                }
+            },
+            
+            // Güvenlik girişini doğrula
+            validateSecurityLogin(username, password, captcha) {
+                // CAPTCHA kontrolü
+                if (captcha !== this.captcha.currentText) {
+                    throw new Error("CAPTCHA doğrulaması başarısız");
+                }
+                
+                // Kullanıcı adı kontrolü
+                if (username !== this.adminCredentials.username) {
+                    throw new Error("Geçersiz kullanıcı adı");
+                }
+                
+                // Şifre kontrolü
+                if (password !== this.adminCredentials.password) {
+                    throw new Error("Geçersiz şifre");
+                }
+                
+                return true;
+            },
+            
+            // Giriş denemesi
+            attemptLogin(username, password, captcha) {
+                // Blok kontrolü
+                if (this.securityStatus.isBlocked) {
+                    const remainingTime = this.getRemainingBlockTime();
+                    throw new Error(`Sistem kilitli. ${remainingTime} sonra tekrar deneyin.`);
+                }
+                
+                // Hız sınırlama kontrolü
+                if (this.securityStatus.lastAttempt) {
+                    const timeSinceLastAttempt = new Date() - new Date(this.securityStatus.lastAttempt);
+                    if (timeSinceLastAttempt < 2000) { // 2 saniyeden kısa sürede giriş denemesi
+                        throw new Error("Çok hızlı giriş denemesi. Lütfen bekleyin.");
+                    }
+                }
+                
+                // Giriş doğrulama
+                try {
+                    this.validateSecurityLogin(username, password, captcha);
+                    
+                    // Başarılı giriş
+                    this.securityStatus.failedAttempts = 0;
+                    this.securityStatus.lastAttempt = new Date();
+                    this.saveSecurityStatus();
+                    this.logSecurityEvent("Başarılı güvenlik girişi", "SUCCESS");
+                    return true;
+                    
+                } catch (error) {
+                    // Başarısız giriş
+                    this.securityStatus.failedAttempts++;
+                    this.securityStatus.lastAttempt = new Date();
+                    this.saveSecurityStatus();
+                    
+                    // Saldırı tespiti
+                    this.detectAttackPattern(username, password);
+                    
+                    // 3 başarısız denemede blok
+                    if (this.securityStatus.failedAttempts >= this.securityStatus.maxAttempts) {
+                        this.blockSystem();
+                        throw new Error("Çok fazla başarısız giriş. Sistem 30 dakika kilitlendi.");
+                    }
+                    
+                    throw error;
+                }
+            },
+            
+            // Sistem bloklama
+            blockSystem() {
+                this.securityStatus.isBlocked = true;
+                this.securityStatus.blockUntil = new Date(Date.now() + 30 * 60 * 1000); // 30 dakika
+                this.saveSecurityStatus();
+                this.updateSecurityUI("Sistem geçici olarak kilitli", "danger");
+                this.disableLogin();
+                this.logSecurityEvent("Sistem güvenlik nedeniyle kilitlendi", "CRITICAL");
+                
+                // 30 dakika sonra otomatik açılma
+                setTimeout(() => {
+                    this.resetSecurityStatus();
+                    this.generateCaptcha();
+                    showToast("Güvenlik kilidi kaldırıldı");
+                }, 30 * 60 * 1000);
+            },
+            
+            // Kalan blok süresini hesapla
+            getRemainingBlockTime() {
+                if (!this.securityStatus.blockUntil) return "0 dakika";
+                
+                const remaining = new Date(this.securityStatus.blockUntil) - new Date();
+                const minutes = Math.ceil(remaining / (60 * 1000));
+                return `${minutes} dakika`;
+            },
+            
+            // Saldırı deseni tespiti
+            detectAttackPattern(username, password) {
+                const input = username + password;
+                
+                this.threatDetection.suspiciousPatterns.forEach(pattern => {
+                    if (pattern.test(input)) {
+                        const threat = `Şüpheli giriş deseni: ${pattern}`;
+                        this.threatDetection.suspiciousActivities.push({
+                            threat,
+                            timestamp: new Date(),
+                            input
+                        });
+                        this.logSecurityEvent(threat, "HIGH");
+                    }
+                });
+                
+                // Çok uzun veya kısa girişler
+                if (username.length > 20 || password.length > 30) {
+                    this.logSecurityEvent("Anormal giriş uzunluğu tespit edildi", "MEDIUM");
+                }
+            },
+            
+            // Güvenlik izleme sistemi
+            setupSecurityMonitoring() {
+                // Sayfa görünürlüğü değişikliği
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        this.logSecurityEvent("Sayfa gizlendi", "INFO");
+                    } else {
+                        this.logSecurityEvent("Sayfa görünür oldu", "INFO");
+                    }
+                });
+                
+                // Klavye dinleme
+                document.addEventListener('keydown', (e) => {
+                    // F12 ve sağ tık engelleme
+                    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                        e.preventDefault();
+                        this.logSecurityEvent("Geliştirici araçları erişim denemesi", "MEDIUM");
+                        showToast("Güvenlik nedeniyle bu işlem engellendi", 3000);
+                    }
+                });
+                
+                // Sağ tık engelleme
+                document.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    this.logSecurityEvent("Sağ tık engellendi", "LOW");
+                });
+            },
+            
+            // Şüpheli aktivite tespiti
+            detectSuspiciousActivity() {
+                // IP değişikliği kontrolü
+                this.detectIPChange();
+                
+                // Tarayıcı parmak izi değişikliği
+                this.detectFingerprintChange();
+            },
+            
+            // IP değişikliği tespiti
+            detectIPChange() {
+                // Basit IP değişikliği tespiti (gerçek uygulamada daha gelişmiş olmalı)
+                const currentIP = this.getClientIP();
+                if (this.securityStatus.ipAddress && this.securityStatus.ipAddress !== currentIP) {
+                    this.logSecurityEvent("IP adresi değişikliği tespit edildi", "HIGH");
+                }
+                this.securityStatus.ipAddress = currentIP;
+            },
+            
+            // İstemci IP'sini al (basit yöntem)
+            getClientIP() {
+                // Gerçek uygulamada bu bilgi backend'den gelmeli
+                return "user_" + Math.random().toString(36).substr(2, 9);
+            },
+            
+            // Tarayıcı parmak izi değişikliği
+            detectFingerprintChange() {
+                // Basit parmak izi kontrolü
+                const fingerprint = this.generateFingerprint();
+                const savedFingerprint = localStorage.getItem('browserFingerprint');
+                
+                if (savedFingerprint && savedFingerprint !== fingerprint) {
+                    this.logSecurityEvent("Tarayıcı parmak izi değişikliği tespit edildi", "HIGH");
+                }
+                
+                localStorage.setItem('browserFingerprint', fingerprint);
+            },
+            
+            // Basit tarayıcı parmak izi oluşturma
+            generateFingerprint() {
+                return navigator.userAgent + navigator.language + 
+                       screen.width + screen.height + screen.colorDepth;
+            },
+            
+            // Güvenlik olayı kaydı
+            logSecurityEvent(event, severity = "MEDIUM") {
+                const log = {
+                    timestamp: new Date().toISOString(),
+                    event: event,
+                    severity: severity,
+                    userAgent: navigator.userAgent,
+                    url: window.location.href,
+                    ip: this.securityStatus.ipAddress
+                };
+                
+                // Log'u localStorage'a kaydet
+                const logs = JSON.parse(localStorage.getItem('securityLogs') || '[]');
+                logs.unshift(log);
+                
+                // Son 500 log'u tut
+                if (logs.length > 500) logs.pop();
+                
+                localStorage.setItem('securityLogs', JSON.stringify(logs));
+                console.log(`[GÜVENLİK] ${severity}: ${event}`);
+                
+                // Kritik olaylarda uyarı göster
+                if (severity === "CRITICAL" || severity === "HIGH") {
+                    this.showSecurityAlert(event);
+                }
+            },
+            
+            // Güvenlik uyarısı göster
+            showSecurityAlert(message) {
+                const alert = document.getElementById('securityAlert');
+                if (alert) {
+                    alert.innerHTML = `<i class="fas fa-shield-alt"></i> ${message}`;
+                    alert.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 10000);
+                }
+            },
+            
+            // Admin panelini aç
+            openAdminPanel() {
+                // Yeni sekmede admin paneli aç
+                const adminHTML = this.generateAdminPanelHTML();
+                const newWindow = window.open('', '_blank');
+                
+                if (newWindow) {
+                    newWindow.document.write(adminHTML);
+                    newWindow.document.close();
+                    this.logSecurityEvent("Admin paneli yeni sekmede açıldı", "INFO");
+                    return true;
+                } else {
+                    showToast("Popup engellendi. Lütfen popup izni verin.", 5000);
+                    return false;
+                }
+            },
+            
+            // Admin paneli HTML oluştur
+            generateAdminPanelHTML() {
+                return `
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialFlow Admin Paneli</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .admin-header {
+            background: #1c1c1e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ff2d55;
+        }
+        .admin-title {
+            color: #ff2d55;
+            font-size: 24px;
+            margin: 0;
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .admin-card {
+            background: #1c1c1e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #2c2c2e;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff2d55;
+        }
+        .security-log {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid;
+        }
+        .log-critical { border-color: #ff3b30; background: rgba(255,59,48,0.1); }
+        .log-high { border-color: #ff9500; background: rgba(255,149,0,0.1); }
+        .log-medium { border-color: #ffcc00; background: rgba(255,204,0,0.1); }
+        .log-low { border-color: #4cd964; background: rgba(76,217,100,0.1); }
+        .log-info { border-color: #007aff; background: rgba(0,122,255,0.1); }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1 class="admin-title">
+            <i class="fas fa-shield-alt"></i> SocialFlow Gelişmiş Admin Paneli
+        </h1>
+        <p>Sistem durumu: <span style="color: #4cd964;">Aktif</span></p>
+    </div>
+    
+    <div class="admin-grid">
+        <div class="admin-card">
+            <h3>Sistem İstatistikleri</h3>
+            <div class="stat-value">1,254</div>
+            <p>Aktif Kullanıcı</p>
+            <div class="stat-value">5,678</div>
+            <p>Toplam Video</p>
+        </div>
+        
+        <div class="admin-card">
+            <h3>Güvenlik Durumu</h3>
+            <div class="stat-value" style="color: #4cd964;">Güvenli</div>
+            <p>Tüm sistemler sorunsuz çalışıyor</p>
+            <div class="stat-value">0</div>
+            <p>Aktif Tehdit</p>
+        </div>
+        
+        <div class="admin-card">
+            <h3>Son Güvenlik Olayları</h3>
+            <div class="security-log" id="securityLog">
+                <!-- Güvenlik logları buraya eklenecek -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Güvenlik loglarını yükle
+        function loadSecurityLogs() {
+            try {
+                const logs = JSON.parse(localStorage.getItem('securityLogs') || '[]');
+                const logContainer = document.getElementById('securityLog');
+                
+                if (logContainer) {
+                    logContainer.innerHTML = logs.slice(0, 20).map(log => {
+                        const severityClass = 'log-' + log.severity.toLowerCase();
+                        const time = new Date(log.timestamp).toLocaleString();
+                        return '<div class="log-entry ' + severityClass + '">[' + time + '] ' + log.event + '</div>';
+                    }).join('');
+                }
+            } catch (e) {
+                console.error('Log yükleme hatası:', e);
+            }
+        }
+        
+        // Sayfa yüklendiğinde logları yükle
+        document.addEventListener('DOMContentLoaded', loadSecurityLogs);
+        
+        // Her 10 saniyede bir logları güncelle
+        setInterval(loadSecurityLogs, 10000);
+        
+        // ESC tuşu ile pencereyi kapat
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.close();
+            }
+        });
+    </script>
+</body>
+</html>
+                `;
+            }
+        };
+
+        // İnsan Doğrulama Sistemi
+        const HumanVerificationSystem = {
+            isVerified: false,
+            verificationStep: 0,
+            totalSteps: 3,
+            timer: null,
+            timeLeft: 60,
+            
+            // Doğrulama soruları ve resimleri
+            puzzles: [
+                {
+                    question: '"Trafik ışıkları" resmini seçin',
+                    correctIndex: 0,
+                    images: [
+                        { url: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=150&h=150&fit=crop', correct: true },
+                        { url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1542736667-069246bdbc6d?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1493238792000-8113da705763?w=150&h=150&fit=crop', correct: false }
+                    ]
+                },
+                {
+                    question: '"Yol tabelası" resmini seçin',
+                    correctIndex: 2,
+                    images: [
+                        { url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1548345680-187b430f0b9e?w=150&h=150&fit=crop', correct: true },
+                        { url: 'https://images.unsplash.com/photo-1553452118-621e1f860f43?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1548345680-187b430f0b9e?w=150&h=150&fit=crop', correct: false }
+                    ]
+                },
+                {
+                    question: '"Otomobil" resmini seçin',
+                    correctIndex: 4,
+                    images: [
+                        { url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=150&h=150&fit=crop', correct: false },
+                        { url: 'https://images.unsplash.com/photo-1549399542-7e247f4b6093?w=150&h=150&fit=crop', correct: true },
+                        { url: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=150&h=150&fit=crop', correct: false }
+                    ]
+                }
+            ],
+            
+            // Sistem başlatma
+            init() {
+                this.resetVerification();
+                this.setupVerificationOptions();
+                this.setupPuzzle();
+                this.setupSlider();
+                this.startTimer();
+            },
+            
+            // Doğrulamayı sıfırla
+            resetVerification() {
+                this.isVerified = false;
+                this.verificationStep = 0;
+                this.timeLeft = 60;
+                document.getElementById('securityLoginBtn').disabled = true;
+                document.getElementById('humanVerification').classList.remove('active');
+                document.getElementById('verificationSuccess').style.display = 'none';
+                this.updateTimerDisplay();
+            },
+            
+            // Seçenek doğrulamasını ayarla
+            setupVerificationOptions() {
+                const options = document.querySelectorAll('.verification-option');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.add('selected');
+                            this.completeStep();
+                        } else {
+                            option.style.borderColor = 'var(--danger)';
+                            option.style.background = 'rgba(255, 59, 48, 0.1)';
+                            setTimeout(() => {
+                                option.style.borderColor = '';
+                                option.style.background = '';
+                            }, 1000);
+                        }
+                    });
+                });
+            },
+            
+            // Bulmaca doğrulamasını ayarla
+            setupPuzzle() {
+                const randomPuzzle = this.puzzles[Math.floor(Math.random() * this.puzzles.length)];
+                document.getElementById('puzzleQuestion').textContent = randomPuzzle.question;
+                
+                const imagesContainer = document.getElementById('puzzleImages');
+                imagesContainer.innerHTML = '';
+                
+                // Resimleri karıştır
+                const shuffledImages = [...randomPuzzle.images].sort(() => Math.random() - 0.5);
+                
+                shuffledImages.forEach((image, index) => {
+                    const imgElement = document.createElement('div');
+                    imgElement.className = 'puzzle-image';
+                    imgElement.innerHTML = `<img src="${image.url}" alt="Puzzle image ${index + 1}" loading="lazy">`;
+                    
+                    imgElement.addEventListener('click', () => {
+                        if (image.correct) {
+                            imgElement.classList.add('selected');
+                            this.completeStep();
+                        } else {
+                            imgElement.style.borderColor = 'var(--danger)';
+                            setTimeout(() => {
+                                imgElement.style.borderColor = '';
+                            }, 1000);
+                        }
+                    });
+                    
+                    imagesContainer.appendChild(imgElement);
+                });
+            },
+            
+            // Sürgü doğrulamasını ayarla
+            setupSlider() {
+                const sliderThumb = document.getElementById('sliderThumb');
+                const sliderTrack = document.getElementById('sliderTrack');
+                const slider = document.getElementById('verificationSlider');
+                
+                let isDragging = false;
+                let startX = 0;
+                let currentX = 0;
+                
+                const onMouseMove = (e) => {
+                    if (!isDragging) return;
+                    currentX = e.clientX - startX;
+                    updateSlider();
+                };
+                
+                const onTouchMove = (e) => {
+                    if (!isDragging) return;
+                    currentX = e.touches[0].clientX - startX;
+                    updateSlider();
+                };
+                
+                const onMouseUp = () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    checkCompletion();
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+                
+                const onTouchEnd = () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    checkCompletion();
+                    document.removeEventListener('touchmove', onTouchMove);
+                    document.removeEventListener('touchend', onTouchEnd);
+                };
+                
+                const updateSlider = () => {
+                    const sliderWidth = slider.offsetWidth - sliderThumb.offsetWidth - 10;
+                    const newX = Math.max(0, Math.min(currentX, sliderWidth));
+                    
+                    sliderThumb.style.left = `${newX}px`;
+                    sliderTrack.style.transform = `translateX(-${100 - (newX / sliderWidth) * 100}%)`;
+                    
+                    if (newX >= sliderWidth - 5) {
+                        this.completeStep();
+                    }
+                };
+                
+                const checkCompletion = () => {
+                    const sliderWidth = slider.offsetWidth - sliderThumb.offsetWidth - 10;
+                    if (currentX < sliderWidth - 5) {
+                        // Tamamlanmadı, sıfırla
+                        sliderThumb.style.left = '5px';
+                        sliderTrack.style.transform = 'translateX(-100%)';
+                        currentX = 0;
+                    }
+                };
+                
+                sliderThumb.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.clientX;
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                });
+                
+                sliderThumb.addEventListener('touchstart', (e) => {
+                    isDragging = true;
+                    startX = e.touches[0].clientX;
+                    document.addEventListener('touchmove', onTouchMove);
+                    document.addEventListener('touchend', onTouchEnd);
+                });
+            },
+            
+            // Adım tamamlama
+            completeStep() {
+                this.verificationStep++;
+                
+                if (this.verificationStep >= this.totalSteps) {
+                    this.verificationSuccess();
+                }
+            },
+            
+            // Doğrulama başarılı
+            verificationSuccess() {
+                this.isVerified = true;
+                document.getElementById('humanVerification').classList.add('active');
+                document.getElementById('verificationSuccess').style.display = 'block';
+                document.getElementById('securityLoginBtn').disabled = false;
+                
+                if (this.timer) {
+                    clearInterval(this.timer);
+                }
+                
+                AdvancedSecuritySystem.logSecurityEvent("İnsan doğrulaması başarılı", "INFO");
+            },
+            
+            // Zamanlayıcıyı başlat
+            startTimer() {
+                this.timeLeft = 60;
+                this.updateTimerDisplay();
+                
+                if (this.timer) {
+                    clearInterval(this.timer);
+                }
+                
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    this.updateTimerDisplay();
+                    
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        this.verificationFailed();
+                    }
+                }, 1000);
+            },
+            
+            // Zamanlayıcıyı güncelle
+            updateTimerDisplay() {
+                const timerElement = document.getElementById('timerValue');
+                const timerDisplay = document.getElementById('verificationTimer');
+                
+                if (timerElement) {
+                    timerElement.textContent = this.timeLeft;
+                }
+                
+                if (timerDisplay) {
+                    timerDisplay.className = 'timer-display';
+                    
+                    if (this.timeLeft <= 15) {
+                        timerDisplay.classList.add('warning');
+                    }
+                    
+                    if (this.timeLeft <= 5) {
+                        timerDisplay.classList.add('danger');
+                    }
+                }
+            },
+            
+            // Doğrulama başarısız
+            verificationFailed() {
+                AdvancedSecuritySystem.logSecurityEvent("İnsan doğrulaması zaman aşımı", "MEDIUM");
+                this.resetVerification();
+                this.init();
+                showToast("Doğrulama zaman aşımı. Lütfen tekrar deneyin.", 5000);
+            },
+            
+            // Doğrulama durumunu kontrol et
+            checkVerification() {
+                if (!this.isVerified) {
+                    throw new Error("Lütfen önce insan doğrulamasını tamamlayın");
+                }
+                return true;
+            }
+        };
+
+        // Giriş input validasyonu
+        function validateSecurityInput(event) {
+            // Sadece harf, rakam ve özel karakterlere izin ver
+            const charCode = event.which ? event.which : event.keyCode;
+            const charStr = String.fromCharCode(charCode);
+            
+            if (!/^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/.test(charStr)) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+
+        // Enter tuşu ile giriş yapma
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                attemptSecurityLogin();
+            }
+        }
+
+        // Güvenlik giriş modalını aç
+        function openSecurityLogin() {
+            AdvancedSecuritySystem.generateCaptcha();
+            HumanVerificationSystem.init();
+            document.getElementById('securityLoginModal').style.display = 'flex';
+            document.getElementById('securityUsername').value = '';
+            document.getElementById('securityPassword').value = '';
+            document.getElementById('captchaInput').value = '';
+            document.getElementById('securityUsername').focus();
+        }
+
+        // Güvenlik girişi denemesi
+        function attemptSecurityLogin() {
+            const username = document.getElementById('securityUsername').value;
+            const password = document.getElementById('securityPassword').value;
+            const captcha = document.getElementById('captchaInput').value.toUpperCase();
+            
+            try {
+                // İnsan doğrulamasını kontrol et
+                HumanVerificationSystem.checkVerification();
+                
+                if (AdvancedSecuritySystem.attemptLogin(username, password, captcha)) {
+                    // Başarılı giriş
+                    document.getElementById('securityLoginModal').style.display = 'none';
+                    if (AdvancedSecuritySystem.openAdminPanel()) {
+                        showToast("Güvenlik girişi başarılı. Admin paneli açılıyor...");
+                    }
+                }
+            } catch (error) {
+                showToast(error.message, 5000);
+                
+                if (error.message.includes("doğrulama")) {
+                    // Sadece doğrulama hatası ise deneme sayısını artırma
+                } else {
+                    AdvancedSecuritySystem.updateRemainingAttempts();
+                    AdvancedSecuritySystem.generateCaptcha();
+                    
+                    // CAPTCHA input'unu temizle
+                    document.getElementById('captchaInput').value = '';
+                    document.getElementById('captchaInput').focus();
+                }
+            }
+        }
+
+        let currentVideoIndex = 0;
+        let currentPage = 'home';
+        let userGender = 'male';
+        let likedVideos = new Set();
+        let isScrolling = false;
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            setupGenderSelection();
+            checkExistingUser();
+            AdvancedSecuritySystem.init();
+            
+            // Gizli admin linki için tıklama olayı
+            document.getElementById('hiddenAdminLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                openSecurityLogin();
+            });
+            
+            // ESC tuşu ile güvenlik modalını kapat
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.getElementById('securityLoginModal').style.display = 'none';
+                }
+            });
+
+            // Fullscreen change event listener
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+        });
+
+        // Cinsiyet seçimini ayarla
+        function setupGenderSelection() {
+            const genderOptions = document.querySelectorAll('.gender-option');
+            
+            genderOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    genderOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    userGender = this.getAttribute('data-gender');
+                });
+            });
+        }
+
+        // Kayıtlı kullanıcı kontrolü
+        function checkExistingUser() {
+            const savedUser = localStorage.getItem('socialflow_user');
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                userGender = userData.gender;
+                enterApp();
+            }
+        }
+
+        // Uygulamaya giriş
+        function enterApp() {
+            // 18+ uyarısını göster
+            showAgeWarning();
+        }
+
+        // 18+ uyarısını göster
+        function showAgeWarning() {
+            document.getElementById('ageWarningModal').classList.add('active');
+        }
+
+        // 18+ uyarısını kapat ve uygulamaya gir
+        function closeAgeWarning() {
+            document.getElementById('ageWarningModal').classList.remove('active');
+            
+            // Kullanıcı verilerini kaydet
+            const userData = {
+                gender: userGender,
+                joined: new Date().toISOString()
+            };
+            localStorage.setItem('socialflow_user', JSON.stringify(userData));
+            
+            // Giriş ekranını gizle
+            document.getElementById('welcomeScreen').style.display = 'none';
+            
+            // Ana uygulamayı göster
+            document.getElementById('mainHeader').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('bottomNav').style.display = 'flex';
+            
+            // İçerikleri yükle
+            loadHomeVideos();
+            loadExploreContent();
+            setupVideoControls();
+            
+            // Hoş geldin mesajı
+            showWelcomeMessage();
+        }
+
+        // Hoş geldin mesajı
+        function showWelcomeMessage() {
+            const genderNames = {
+                'male': 'Erkek',
+                'female': 'Kadın', 
+                'lesbian': 'Lezbiyen',
+                'gay': 'Gay',
+                'trans': 'Trans',
+                'other': 'Diğer'
+            };
+            
+            showToast(`Hoş geldin! ${genderNames[userGender]} kullanıcı olarak giriş yaptın.`);
+        }
+
+        // Toast bildirimi göster
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, duration);
+        }
+
+        // Ana sayfa videolarını yükle
+        function loadHomeVideos() {
+            const feed = document.getElementById('videoFeed');
+            const videos = videoData.all;
+            
+            feed.innerHTML = videos.map((video, index) => `
+                <div class="video-container" data-video-index="${index}">
+                    <div class="video-loading"></div>
+                    <video class="video-player" loop playsinline preload="metadata" muted>
+                        <source src="${video.videoUrl}" type="video/mp4">
+                    </video>
+                    
+                    <div class="video-overlay">
+                        <div class="video-info">
+                            <div class="video-creator">
+                                <div class="creator-avatar">${video.creator.avatar}</div>
+                                <div class="creator-info">
+                                    <div class="creator-name">${video.creator.name}</div>
+                                    <div class="creator-followers">${video.creator.followers} takipçi</div>
+                                </div>
+                            </div>
+                            <div class="video-caption">${video.caption}</div>
+                            <div class="video-tags">
+                                ${video.caption.split(' ').filter(word => word.startsWith('#')).map(tag => 
+                                    `<span class="video-tag">${tag}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-actions">
+                        <button class="action-btn" onclick="toggleLike(${video.id}, this)">
+                            <div class="action-icon">
+                                <i class="fas fa-heart ${likedVideos.has(video.id) ? 'liked' : ''}"></i>
+                            </div>
+                            <div class="action-count">${video.likes}</div>
+                        </button>
+                        <button class="action-btn" onclick="showComments(${video.id})">
+                            <div class="action-icon">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div class="action-count">${video.views}</div>
+                        </button>
+                        <button class="action-btn" onclick="shareVideo(${video.id})">
+                            <div class="action-icon">
+                                <i class="fas fa-share"></i>
+                            </div>
+                            <div class="action-count">Paylaş</div>
+                        </button>
+                        <button class="action-btn" onclick="toggleMute(this)">
+                            <div class="action-icon">
+                                <i class="fas fa-volume-mute"></i>
+                            </div>
+                            <div class="action-count">Ses</div>
+                        </button>
+                        <button class="action-btn" onclick="toggleFullscreen(this)">
+                            <div class="action-icon">
+                                <i class="fas fa-expand"></i>
+                            </div>
+                            <div class="action-count">Tam Ekran</div>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Scroll indicator'ı oluştur
+            createScrollIndicator();
+            
+            // İlk videoyu oynat
+            setTimeout(() => {
+                playCurrentVideo();
+            }, 500);
+        }
+
+        // Ses kontrolü
+        function toggleMute(button) {
+            const videoContainer = button.closest('.video-container');
+            const video = videoContainer.querySelector('.video-player');
+            const icon = button.querySelector('i');
+            
+            if (video.muted) {
+                video.muted = false;
+                icon.className = 'fas fa-volume-up';
+                showToast('Ses açıldı');
+            } else {
+                video.muted = true;
+                icon.className = 'fas fa-volume-mute';
+                showToast('Ses kapatıldı');
+            }
+        }
+
+        // Tam ekran işlevi
+        function toggleFullscreen(button) {
+            const videoContainer = button.closest('.video-container');
+            
+            if (!document.fullscreenElement) {
+                // Tam ekran yap
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.webkitRequestFullscreen) {
+                    videoContainer.webkitRequestFullscreen();
+                } else if (videoContainer.mozRequestFullScreen) {
+                    videoContainer.mozRequestFullScreen();
+                } else if (videoContainer.msRequestFullscreen) {
+                    videoContainer.msRequestFullscreen();
+                }
+                
+                showToast('Tam ekran modu');
+            } else {
+                // Tam ekrandan çık
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                
+                showToast('Tam ekrandan çıkıldı');
+            }
+        }
+
+        // Fullscreen değişikliklerini takip et
+        function handleFullscreenChange() {
+            // Gerekirse fullscreen değişikliklerini işle
+        }
+
+        // Scroll indicator oluştur
+        function createScrollIndicator() {
+            const indicator = document.getElementById('scrollIndicator');
+            const videos = videoData.all;
+            
+            indicator.innerHTML = videos.map((_, index) => 
+                `<div class="scroll-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`
+            ).join('');
+            
+            indicator.style.display = 'flex';
+        }
+
+        // Keşfet sayfasını yükle
+        function loadExploreContent() {
+            loadCategories();
+            loadExploreVideos();
+        }
+
+        // Kategorileri yükle
+        function loadCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            
+            grid.innerHTML = categories.map(category => `
+                <div class="category-card" onclick="openCategory('${category.id}')">
+                    <div class="category-icon" style="color: ${category.color}">
+                        <i class="${category.icon}"></i>
+                    </div>
+                    <div class="category-name">${category.name}</div>
+                    <div class="category-count">${category.count} video</div>
+                </div>
+            `).join('');
+        }
+
+        // Keşfet videolarını yükle
+        function loadExploreVideos() {
+            const grid = document.getElementById('exploreVideosGrid');
+            const videos = videoData.all;
+            
+            grid.innerHTML = videos.map(video => `
+                <div class="video-item" onclick="openVideoModal('${video.videoUrl}')">
+                    <img src="${video.thumbnail}" alt="${video.caption}" class="video-thumbnail">
+                    <div class="video-item-duration">${video.duration}</div>
+                    <div class="video-item-overlay">
+                        <div class="video-item-creator">
+                            <div class="video-item-avatar">${video.creator.avatar}</div>
+                            <div class="video-item-name">${video.creator.name}</div>
+                        </div>
+                        <div class="video-item-stats">
+                            <div class="video-item-stat">
+                                <i class="fas fa-play"></i>
+                                ${video.views}
+                            </div>
+                            <div class="video-item-stat">
+                                <i class="fas fa-heart"></i>
+                                ${video.likes}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Sayfa değiştir
+        function switchPage(page) {
+            // Tüm sayfaları gizle
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+            });
+            
+            // Tüm nav item'ları pasif yap
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Aktif sayfayı göster
+            document.getElementById(page + 'Page').classList.add('active');
+            
+            // Aktif nav item'ı işaretle
+            document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+            
+            currentPage = page;
+            
+            // Ana sayfaya geçildiğinde videoyu oynat
+            if (page === 'home') {
+                setTimeout(() => {
+                    playCurrentVideo();
+                }, 100);
+            }
+        }
+
+        // Video kontrollerini ayarla
+        function setupVideoControls() {
+            const videoFeed = document.getElementById('videoFeed');
+            
+            // Scroll olayını dinle
+            videoFeed.addEventListener('scroll', handleScroll);
+            
+            // Touch events için
+            let startY = 0;
+            
+            videoFeed.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].clientY;
+            });
+            
+            videoFeed.addEventListener('touchend', (e) => {
+                const endY = e.changedTouches[0].clientY;
+                const diff = startY - endY;
+                
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        scrollToNextVideo();
+                    } else {
+                        scrollToPrevVideo();
+                    }
+                }
+            });
+
+            // Klavye kontrolleri
+            document.addEventListener('keydown', function(e) {
+                if (currentPage !== 'home') return;
+                
+                if (e.key === 'ArrowDown') {
+                    scrollToNextVideo();
+                } else if (e.key === 'ArrowUp') {
+                    scrollToPrevVideo();
+                } else if (e.key === ' ') {
+                    // Space tuşu ile play/pause
+                    const videos = document.querySelectorAll('.video-player');
+                    const currentVideo = videos[currentVideoIndex];
+                    if (currentVideo.paused) {
+                        currentVideo.play();
+                    } else {
+                        currentVideo.pause();
+                    }
+                    e.preventDefault();
+                } else if (e.key === 'Escape') {
+                    // ESC tuşu ile tam ekrandan çık
+                    if (document.fullscreenElement) {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        } else if (document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if (document.msExitFullscreen) {
+                            document.msExitFullscreen();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Scroll işleyici
+        function handleScroll() {
+            if (isScrolling) return;
+            
+            isScrolling = true;
+            const videoFeed = document.getElementById('videoFeed');
+            const scrollTop = videoFeed.scrollTop;
+            const windowHeight = window.innerHeight;
+            
+            currentVideoIndex = Math.round(scrollTop / windowHeight);
+            
+            // Scroll indicator'ı güncelle
+            updateScrollIndicator();
+            
+            // Mevcut videoyu oynat
+            playCurrentVideo();
+            
+            setTimeout(() => {
+                isScrolling = false;
+            }, 100);
+        }
+
+        // Scroll indicator'ı güncelle
+        function updateScrollIndicator() {
+            const dots = document.querySelectorAll('.scroll-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentVideoIndex);
+            });
+        }
+
+        // Sonraki videoya kaydır
+        function scrollToNextVideo() {
+            if (currentVideoIndex < videoData.all.length - 1) {
+                currentVideoIndex++;
+                scrollToVideo(currentVideoIndex);
+            }
+        }
+
+        // Önceki videoya kaydır
+        function scrollToPrevVideo() {
+            if (currentVideoIndex > 0) {
+                currentVideoIndex--;
+                scrollToVideo(currentVideoIndex);
+            }
+        }
+
+        // Belirli bir videoya kaydır
+        function scrollToVideo(index) {
+            const videoFeed = document.getElementById('videoFeed');
+            const windowHeight = window.innerHeight;
+            
+            videoFeed.scrollTo({
+                top: index * windowHeight,
+                behavior: 'smooth'
+            });
+            
+            currentVideoIndex = index;
+            updateScrollIndicator();
+            playCurrentVideo();
+        }
+
+        // Mevcut videoyu oynat
+        function playCurrentVideo() {
+            const videos = document.querySelectorAll('.video-player');
+            
+            // Tüm videoları durdur
+            videos.forEach((video, index) => {
+                if (index !== currentVideoIndex) {
+                    video.pause();
+                }
+            });
+            
+            // Mevcut videoyu oynat
+            if (videos[currentVideoIndex]) {
+                videos[currentVideoIndex].play().catch(e => {
+                    console.log("Video oynatma hatası:", e);
+                });
+            }
+        }
+
+        // Beğeni butonu
+        function toggleLike(videoId, button) {
+            const heartIcon = button.querySelector('i');
+            
+            if (likedVideos.has(videoId)) {
+                // Beğeniyi kaldır
+                likedVideos.delete(videoId);
+                heartIcon.classList.remove('liked');
+                showToast('Beğeni kaldırıldı');
+            } else {
+                // Beğeni ekle
+                likedVideos.add(videoId);
+                heartIcon.classList.add('liked');
+                showToast('Video beğenildi!');
+                
+                // Animasyon efekti
+                button.querySelector('.action-icon').style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    button.querySelector('.action-icon').style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+
+        // Yorumları göster
+        function showComments(videoId) {
+            showToast('Yorumlar açılıyor...');
+        }
+
+        // Video paylaş
+        function shareVideo(videoId) {
+            showToast('Video paylaşım menüsü açılıyor...');
+        }
+
+        // Kategori aç
+        function openCategory(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            showToast(`"${category.name}" kategorisi açılıyor...`);
+        }
+
+        // Video modal'ını aç
+        function openVideoModal(videoUrl) {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('modalVideo');
+            
+            video.src = videoUrl;
+            modal.classList.add('active');
+            
+            // Videoyu oynat
+            video.play().catch(e => {
+                console.log("Video oynatma hatası:", e);
+            });
+        }
+
+        // Video modal'ını kapat
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('modalVideo');
+            
+            video.pause();
+            video.src = '';
+            modal.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
